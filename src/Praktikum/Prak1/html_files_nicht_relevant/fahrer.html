@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <div class="topnav">
+            <a href="#index.html">Home</a>
+            <a href="bestellung.html">Bestellung</a>
+            <a href="kunde.html">Kunde</a>
+            <a href="backer.html">Bäcker</a>
+            <a href="fahrer.html">Fahrer</a>
+        </div>
+    </header>
+    <section class="fahrer" id="fahrer">
+        <form action="https://echo.fbi.h-da.de/" method="post">
+            <ul class="customer-list">
+                <li class="customer-item">
+                    <div class="order-status">
+                        <span class="delivery_info">Memestrasse 19 - 15$</span>
+                        <input type="radio" name="fahrer_status" value="rdf" id="fahrer_status-rfd">
+                        <label for="order1-rdf" class="order-status-label">Ready for Delivery</label>
+                        <input type="radio" name="fahrer_status" value="od" id="fahrer_status-od">
+                        <label for="fahrer_status-od" class="order-status-label">On Delivery</label>
+                        <input type="radio" name="fahrer_status" value="ready" id="fahrer_status-d">
+                        <label for="order1-deliveres" class="order-status-label">Delivered</label>
+                        <br>
+                    </div>
+                </li>
+            </ul>
+            <button class="btn submit_status_fahrer">Submit</button>
+        </form>
+    </section>
+</body>
+
+</html>
