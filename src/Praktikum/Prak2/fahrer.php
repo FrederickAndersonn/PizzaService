@@ -11,7 +11,8 @@ class Fahrer extends Page
 
         echo '<section class="fahrer" id="fahrer">';
         echo '<h1>Fahrer</h1>';
-        echo '<form action="" method="post">';  // Update the form action as needed
+        echo '<form action="" method="post">'; 
+        echo '<meta http-equiv="Refresh" content="10; URL=fahrer.php">';// Update the form action as needed
 
         // Fetch and display customer orders from the database
         $this->displayCustomerOrders();

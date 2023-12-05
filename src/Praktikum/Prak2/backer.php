@@ -13,6 +13,7 @@ class Baecker extends Page
         <section class="backer" id="backer">
             <h1>Baecker</h1>
             <form action="" method="post">
+            <meta http-equiv="Refresh" content="10; URL=backer.php">
                 <ul class="customer-list">
         HTML;
 

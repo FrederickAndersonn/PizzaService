@@ -136,6 +136,7 @@ abstract class Page
     {
 
     }
+    
 } // end of class
 
 // Zend standard does not like closing php-tag!
