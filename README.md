@@ -56,7 +56,7 @@ For normal access to the database without serious permissions please always use 
 
 ### PHPmyAdmin
 
-To access `phpmyadmin` go to [http://localhost:8085/](http://localhost:8085/). For convenience there is a forward from [http://localhost/phpmyadmin](http://localhost/phpmyadmin).
+To access `phpmyadmin` go to [http://locadlhost:8085/](http://localhost:8085/). For convenience there is a forward from [http://localhost/phpmyadmin](http://localhost/phpmyadmin).
 
 Use the credentials you have set in the `env.txt` file for login. The database will be stored persistently. But if you rebuild the database container your entries will be lost. So you should better export a modified database scheme into a sql-file. 
 Hint: The files in the folder `Docker\mariadb.setup` are read when building the docker containers and imported into the database. So if you want to make persistent changes this is the place to go. The files will be imported in alphabetic order. To see changes you made in the files you have to rebuild the MariaDB-container. Be aware that any error in those files will crash the startup of your MariaDB-container! 

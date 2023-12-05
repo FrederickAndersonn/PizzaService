@@ -3,6 +3,7 @@ version: '3'
 services:
   php-apache:
     image:  registry.code.fbi.h-da.de/ewa_public/23ss_base_project/ewa_php-apache:latest
+    platform: linux/amd64
     container_name: ewa_lab_php_apache
     environment:
       TZ: "Europe/Berlin"
@@ -17,6 +18,7 @@ services:
 
   mariadb:
     image:  registry.code.fbi.h-da.de/ewa_public/23ss_base_project/ewa_mariadb:latest    
+    platform: linux/amd64
     container_name: ewa_lab_mariadb
     volumes:
       - mariadb:/var/lib/mysql
@@ -36,6 +38,7 @@ services:
 
   phpadmin:
     image:  registry.code.fbi.h-da.de/ewa_public/23ss_base_project/ewa_phpmyadmin:latest
+    platform: linux/amd64
     container_name: ewa_lab_phpmyadmin
     networks:
       - ewa_lab_network

@@ -15,6 +15,7 @@ class Exam21 extends Page
      * @throws Exception
      */
     protected function __construct()
+    
     {
         parent::__construct();
         // to do: instantiate members representing substructures/blocks
