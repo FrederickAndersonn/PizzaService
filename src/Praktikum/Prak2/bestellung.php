@@ -4,6 +4,33 @@ require_once 'page.php';
 
 class Bestellung extends Page
 {
+    public function getData(): array
+    {
+        $pizzas = array();
+    
+        // Query to select pizza data from the database
+        $query = "SELECT name, price, picture FROM article";
+        $result = $this->_database->query($query);
+    
+        // Check if the query was successful
+        if ($result) {
+            // Fetch each row from the result set
+            while ($row = $result->fetch_assoc()) {
+                // Add the pizza data to the $pizzas array
+                $pizzas[$row['name']] = array(
+                    "price" => (int)$row['price'],
+                    "image" => $row['picture']
+                );
+            }
+    
+            $result->free();
+        } else {
+            // Handle query error
+            throw new Exception("Error executing query: " . $this->_database->error);
+        }
+    
+        return $pizzas;
+    }
     public function generateView(): void
     {
         $title = 'Bestellung';
@@ -18,29 +45,7 @@ class Bestellung extends Page
                         <h2>Speisekarte</h2>
                         <div class="speisekarte">
 HTML;
-
-$pizzas = array();
-
-// Query to select pizza data from the database
-$query = "SELECT name, price, picture FROM article";
-$result = $this->_database->query($query);
-
-// Check if the query was successful
-if ($result) {
-    // Fetch each row from the result set
-    while ($row = $result->fetch_assoc()) {
-        // Add the pizza data to the $pizzas array
-        $pizzas[$row['name']] = array(
-            "price" => (int)$row['price'],
-            "image" => $row['picture']
-        );
-    }
-
-    $result->free();
-} else {
-    // Handle query error
-    throw new Exception("Error executing query: " . $this->_database->error);
-}
+        $pizzas = $this->getData();
 
         foreach ($pizzas as $pizzaName => $pizzaDetails) {
             echo '<div class="pizza_container">';

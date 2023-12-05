@@ -52,7 +52,7 @@ class Baecker extends Page
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
                 echo '<li class="customer-item">';
-                echo '<div class="order-status">';
+                echo '<div class="order-status" style="border: 1px solid #000; padding: 10px; width: 720px;">';
                 echo '<span class="customer-name">Order ID: ' . $row['ordering_id'] . '</span>';
                 echo '<br>';
                 // Output articles and radio buttons for each order
@@ -77,18 +77,23 @@ class Baecker extends Page
                   FROM ordered_article oa
                   JOIN article a ON oa.article_id = a.article_id
                   WHERE oa.ordering_id = $orderingId";
-
+    
         $result = $this->_database->query($query);
-
+    
         // Check if the query was successful
         if ($result) {
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
+                // Skip pizzas with status greater than or equal to 4
+                if ($row['status'] >= 4) {
+                    continue;
+                }
+    
                 echo '<span class="article-info">' . htmlspecialchars($row['article_name']) . '</span>';
                 echo '<br>';
                 $this->generateRadioButtons((int)$row['status'], $orderingId, (int)$row['article_id']);
             }
-
+    
             // Free the result set
             $result->free();
         } else {
@@ -96,6 +101,7 @@ class Baecker extends Page
             throw new Exception("Error executing query: " . $this->_database->error);
         }
     }
+    
 
     private function generateRadioButtons(int $status, int $orderingId, int $articleId): void
     {

@@ -36,31 +36,36 @@ class Fahrer extends Page
 
     private function displayCustomerOrders(): void
     {
-        // Fetch delivery information from the ordering database
-        $query = "SELECT ordering_id, address FROM ordering";
-
+        // Fetch delivery information and total price from the ordering database
+        $query = "SELECT o.ordering_id, o.address, SUM(a.price) AS total_price
+                  FROM ordering o
+                  JOIN ordered_article oa ON o.ordering_id = oa.ordering_id
+                  JOIN article a ON oa.article_id = a.article_id
+                  GROUP BY o.ordering_id";
+    
         $result = $this->_database->query($query);
-
+    
         // Check if the query was successful
         if ($result) {
             echo '<ul class="customer-list">';
-
+    
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
                 echo '<li class="customer-item">';
-                echo '<div class="order-status">';
-                echo '<span class="fahrer_name">Abdul</span>';
+                echo '<div class="order-status" style="border: 1px solid #000; padding: 10px; width: 720px;">';
                 echo '<br>';
-                echo '<span class="delivery_info">' . htmlspecialchars($row['address']) . '</span>';
+                echo '<span class="delivery_info">Address: ' . htmlspecialchars($row['address']) . '</span>';
                 echo '<br>';
-
-                // Output radio buttons for each status
+                echo '<span class="total_price">Total Price: ' . number_format((float)$row['total_price'], 2) . ' $</span>';
+                echo '<br>';
+    
+                // Output radio buttons for each status for pizzas with status >= 4
                 $this->generateRadioButtonsForOrdering($row['ordering_id']);
                 echo '</div>';
                 echo '</li>';
             }
             echo '</ul>';
-
+    
             // Free the result set
             $result->free();
         } else {
@@ -68,18 +73,20 @@ class Fahrer extends Page
             throw new Exception("Error executing query: " . $this->_database->error);
         }
     }
+    
 
-    private function generateRadioButtonsForOrdering(string $orderingId): void
-    {
-        // Fetch ordered articles for the specific ordering
-        $query = "SELECT oa.article_id, oa.status, a.name AS article_name
-                  FROM ordered_article oa
-                  JOIN article a ON oa.article_id = a.article_id
-                  WHERE oa.ordering_id = '$orderingId'";
+private function generateRadioButtonsForOrdering(string $orderingId): void
+{
+    // Fetch ordered articles for the specific ordering with status >= 4
+    $query = "SELECT oa.article_id, oa.status, a.name AS article_name
+              FROM ordered_article oa
+              JOIN article a ON oa.article_id = a.article_id
+              WHERE oa.ordering_id = '$orderingId' AND oa.status >=2 AND oa.status <5";
 
-        $result = $this->_database->query($query);
+    $result = $this->_database->query($query);
 
-        if ($result) {
+    if ($result) {
+        if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $articleId = $row['article_id'];
                 $status = (int)$row['status'];
@@ -88,14 +95,19 @@ class Fahrer extends Page
                 echo '<span class="article-info">' . $articleName . '</span>';
                 $this->generateRadioButtons($status, $orderingId, $articleId);
             }
-
-            // Free the result set
-            $result->free();
         } else {
-            // Handle query error
-            throw new Exception("Error executing query: " . $this->_database->error);
+            // Display a message when there are no ordered articles
+            echo '<p>Nothing to deliver.</p>';
         }
+
+        // Free the result set
+        $result->free();
+    }  else {
+        // Handle query error
+        throw new Exception("Error executing query: " . $this->_database->error);
     }
+}
+
 
     private function generateRadioButtons(int $status, string $orderingId, string $articleId): void
     {
