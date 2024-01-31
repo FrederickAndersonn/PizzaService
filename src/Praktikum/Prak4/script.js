@@ -1,10 +1,11 @@
+"use strict";
 document.addEventListener('DOMContentLoaded', function() {
     const cart = [];
     const totalElement = document.getElementById('total');
     const cartItemsElement = document.querySelector('.warenkorb_items ul');
-    const delete_button = document.getElementById('deleteBtn');
-    const bestellen_button = document.getElementById('bestellenBtn');
-    let selectedPizzasInput; // Declare the variable in a broader scope
+    const delete_btn = document.querySelector('.delete_btn');
+    const bestellenBtn = document.getElementById('bestellenBtn'); // Get the bestellen button
+    let selectedPizzasInput;
 
     function updateSelectedPizzasInput() {
         selectedPizzasInput = document.getElementById('selected_pizzas_input');
@@ -12,19 +13,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateCartAndTotal() {
-        cartItemsElement.innerHTML = '';
+        while (cartItemsElement.firstChild) {
+            cartItemsElement.removeChild(cartItemsElement.firstChild);
+        }
+    
         let total = 0;
-
-        for (const item of cart) {
+    
+        cart.forEach((item, index) => {
             const listItem = document.createElement('li');
-            listItem.textContent = item.name;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = index;
+            checkbox.name = 'deleteCheckbox';
+            listItem.appendChild(checkbox);
+            const itemNameSpan = document.createElement('span');
+            itemNameSpan.textContent = item.name;
+            listItem.appendChild(itemNameSpan);
             cartItemsElement.appendChild(listItem);
             total += item.price;
-        }
-
+        });
+    
         totalElement.textContent = total;
-        updateSelectedPizzasInput(); // Call the function to update selectedPizzasInput
+        updateSelectedPizzasInput(); 
     }
+    
 
     const pizzaContainers = document.querySelectorAll('.pizza_container');
     pizzaContainers.forEach((container, index) => {
@@ -38,15 +50,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add a click event to the Delete button
-    delete_button.addEventListener('click', () => {
-        // Clear the cart and update the display
+    document.addEventListener('change', function(event) {
+        if (event.target.name === 'deleteCheckbox') {
+            const index = parseInt(event.target.value, 10);
+            cart.splice(index, 1);
+            updateCartAndTotal();
+        }
+    });
+
+    delete_btn.addEventListener('click', function() {
         cart.length = 0;
         updateCartAndTotal();
     });
 
-    bestellen_button.addEventListener('click', () => {
-        // Perform actions when the "Bestellen" button is clicked
-        // You can add your logic here
+    // Add event listener to the bestellen button
+    bestellenBtn.addEventListener('click', function(event) {
+        // Check if cart is empty before submitting
+        if (cart.length === 0) {
+            event.preventDefault(); // Prevent form submission
+            alert('Please select at least one pizza before ordering.');
+        }
     });
+
 });

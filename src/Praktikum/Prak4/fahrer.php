@@ -11,7 +11,7 @@ class Fahrer extends Page
 
         echo '<section class="fahrer" id="fahrer">';
         echo '<h1>Fahrer</h1>';
-        echo '<form action="https://echo.fbi.h-da.de/" method="post" id ="formid">'; 
+        echo '<form action="" method="post" id ="formid">'; 
     
         $this->displayCustomerOrders();
 
@@ -46,28 +46,37 @@ class Fahrer extends Page
                   GROUP BY o.ordering_id";
     
         $result = $this->_database->query($query);
-    
         // Check if the query was successful
         if ($result) {
             echo '<ul class="customer-list">';
+            $hasArticles = false;
     
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
-                echo '<li class="customer-item">';
-                echo '<div class="order-status" style="border: 1px solid #000; padding: 10px; width: 720px;">';
-                echo '<br>';
-                echo '<span class="delivery_info">Address: ' . htmlspecialchars($row['address']) . '</span>';
-                echo '<br>';
-                echo '<span class="total_price">Total Price: ' . number_format((float)$row['total_price'], 2) . ' $</span>';
-                echo '<br>';
+                $orderingId = $row['ordering_id'];
     
-                // Output radio buttons for each status for pizzas with status >= 4
-                $this->generateRadioButtonsForOrdering($row['ordering_id']);
-                echo '</div>';
-                echo '</li>';
+                // Check if there are articles with status between 2 and 5
+                if ($this->hasArticlesWithStatus($orderingId)) {
+                    $hasArticles = true;
+                    echo '<li class="customer-item">';
+                    echo '<div class="order-status" style="border: 1px solid #000; padding: 10px; width: 720px;">';
+                    echo '<br>';
+                    echo '<span class="delivery_info">Address: ' . htmlspecialchars($row['address']) . '</span>';
+                    echo '<br>';
+                    echo '<span class="total_price">Total Price: ' . number_format((float)$row['total_price'], 2) . ' $</span>';
+                    echo '<br>';
+    
+                    // Output radio buttons for each status for pizzas with status >= 4
+                    $this->generateRadioButtonsForOrdering($orderingId);
+                    echo '</div>';
+                    echo '</li>';
+                }
+
             }
             echo '</ul>';
-    
+            if (!$hasArticles) {
+                echo '<p>Nothing to send.</p>';
+            }
             // Free the result set
             $result->free();
         } else {
@@ -76,10 +85,30 @@ class Fahrer extends Page
         }
     }
     
+    private function hasArticlesWithStatus(string $orderingId): bool
+    {
+        // Check if there are articles with status between 2 and 5 for the specific ordering
+        $query = "SELECT COUNT(*) AS num_articles
+                  FROM ordered_article
+                  WHERE ordering_id = '$orderingId' AND status >= 2 AND status < 5";
+    
+        $result = $this->_database->query($query);
+    
+        if ($result) {
+            $row = $result->fetch_assoc();
+            $numArticles = (int)$row['num_articles'];
+            return $numArticles > 0;
+        } else {
+            // Handle query error
+            throw new Exception("Error executing query: " . $this->_database->error);
+        }
+    }
+    
+    
 
 private function generateRadioButtonsForOrdering(string $orderingId): void
 {
-    // Fetch ordered articles for the specific ordering with status >= 4
+    // Fetch ordered articles for the specific ordering with status >= 3
     $query = "SELECT oa.article_id, oa.status, a.name AS article_name
               FROM ordered_article oa
               JOIN article a ON oa.article_id = a.article_id

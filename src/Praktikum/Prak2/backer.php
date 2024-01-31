@@ -12,7 +12,7 @@ class Baecker extends Page
         echo <<<HTML
         <section class="backer" id="backer">
             <h1>Baecker</h1>
-            <form action="https://echo.fbi.h-da.de/" method="post" id= "formid">
+            <form action="" method="post" id= "formid">
                 <ul class="customer-list">
         HTML;
 

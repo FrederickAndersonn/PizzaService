@@ -312,3 +312,8 @@ section {
 .delete_btn {
     background: #002347;
 }
+
+.kunde{
+    display: flex;
+    justify-content: center;
+}

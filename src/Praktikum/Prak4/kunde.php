@@ -17,6 +17,7 @@ class Kunde extends Page
         <script src="statusupdate.js"></script>
         <section class="kunde" id="kunde">
             <h1>Kunde</h1>
+            <h2>Lieferstatus<h2>
         HTML;
 
         // Fetch the last order ID from the session
@@ -30,7 +31,6 @@ class Kunde extends Page
              <script>
                  // Fetch and display the status using AJAX
                  window.onload = function() {
-                     updateStatus($lastOrderId);
                      requestData();
                      startPolling();
                  };
@@ -49,41 +49,48 @@ class Kunde extends Page
                   FROM ordered_article oa
                   JOIN article a ON oa.article_id = a.article_id
                   WHERE oa.ordering_id = $orderId";
-
+    
         $result = $this->_database->query($query);
-
-        // Check if the query was successful
+    
         if ($result) {
-            echo '<div class="lieferstatus">';
-            echo '<h3>Lieferstatus</h3>';
-
-            // Fetch each row from the result set
+            // Echo a container div for the lieferstatus
+            echo '<div class="lieferstatus-container">';
+    
+            // Iterate through each row in the result set
             while ($row = $result->fetch_assoc()) {
-                echo '<p class="status-item" data-article-id="' . $row['article_id'] . '">' . htmlspecialchars($row['article_name']) . ': ' . $this->getStatusText((int)$row['status']) . '</p>';
+                $statusInfo = $this->getStatus((int)$row['status']);
+                echo '<div class="lieferstatus-item" data-article-id="' . $row['article_id'] . '">';
+                echo '<p class="status-item">' . htmlspecialchars($row['article_name']) . ': ' . $statusInfo['label'] . '</p>';
+                echo '<img src="' . $statusInfo['image'] . '" alt="' . $statusInfo['label'] . '" class="status-image"  width="150" height="150">';
+                echo '</div>';
             }
-
+    
+            // Close the lieferstatus-container div
+            echo '</div>';
+    
             // Free the result set
             $result->free();
-
-            echo '</div>';
         } else {
             // Handle query error
             echo '<p>Error retrieving data</p>';
         }
     }
-
-    private function getStatusText(int $status): string
+    
+    
+    private function getStatus(int $status): array
     {
         $statusOptions = [
-            0 => 'Bestellt',
-            1 => 'In Bearbeitung',
-            2 => 'Fertig zur Lieferung',
-            3 => 'Unterwegs',
-            4 => 'Geliefert'
+            0 => ['label' => 'Ordered', 'image' => 'assets/ewa.gif'],
+            1 => ['label' => 'In the Oven', 'image' => 'assets/giphy.gif'],
+            2 => ['label' => 'Ready', 'image' => 'assets/ready.gif'],
+            3 => ['label' => 'Ready for Delivery', 'image' => 'assets/readytogo.gif'],
+            4 => ['label' => 'In Delivery', 'image' => 'assets/ondelivery.gif'],
+            5 => ['label' => 'Delivered', 'image' => 'assets/delivered.gif'],
         ];
-
-        return $statusOptions[$status] ?? 'Unknown';
+    
+        return $statusOptions[$status] ?? ['label' => 'Unknown', 'image' => 'unknown_image_path'];
     }
+    
 
     public static function main(): void
     {

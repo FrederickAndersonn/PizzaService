@@ -18,7 +18,7 @@ class Bestellung extends Page
             while ($row = $result->fetch_assoc()) {
                 // Add the pizza data to the $pizzas array
                 $pizzas[$row['name']] = array(
-                    "price" => (int)$row['price'],
+                    "price" => (float)$row['price'],
                     "image" => $row['picture']
                 );
             }
